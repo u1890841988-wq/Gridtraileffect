@@ -3,48 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numecraft Trail</title>
+    <title>Prisma Trail - Clean Gold Edition</title>
     <style>
         :root {
-            --bg-top: #0e0d0a;
-            --bg-bottom: #1c180e;
+            --bg-color: #0e0d0a;
             --gold: #fcd55b;
-            --glow: rgba(252, 213, 91, 0.4);
+            --glow: rgba(252, 213, 91, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
+            background-color: var(--bg-color);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            cursor: none; /* Hide cursor to emphasize the glow card effect */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* The Framer-style Glow Card Cursor */
-        #glow-cursor {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            transition: opacity 0.3s ease;
-            opacity: 0;
-        }
-
-        .grid-container {
+        /* Full screen grid container */
+        .prisma-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(25px, 1fr));
-            grid-template-rows: repeat(auto-fill, minmax(25px, 1fr));
+            /* Dense grid for a smooth trail */
+            grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(30px, 1fr));
             width: 100vw;
             height: 100vh;
             position: absolute;
-            top: 0;
-            left: 0;
         }
 
         .grid-item {
@@ -54,41 +45,40 @@
             justify-content: center;
         }
 
-        /* The "Line" inside each cell */
+        /* The Prisma Line */
         .line {
-            width: var(--line-width, 2px);
-            height: var(--line-length, 0px);
+            width: 2px;
+            height: 15px;
             background-color: var(--gold);
-            box-shadow: 0 0 10px var(--gold);
-            border-radius: 10px;
-            transform: rotate(var(--random-rotate));
-            transition: height 0.1s ease, background-color 2s ease, box-shadow 2s ease, opacity 2s ease;
+            border-radius: 2px;
             opacity: 0;
+            /* 2 second fade out as requested */
+            transition: opacity 2s ease, transform 2s ease, background-color 2s ease;
+            will-change: transform, opacity;
         }
 
+        /* Active state when cursor is near */
         .line.active {
             opacity: 1;
-            height: var(--line-length);
-            transition: none; /* Instant grow on touch */
+            box-shadow: 0 0 12px var(--glow);
+            /* Instant appearance */
+            transition: none; 
         }
     </style>
 </head>
 <body>
 
-    <div id="glow-cursor"></div>
-    <div class="grid-container" id="grid"></div>
+    <div class="prisma-grid" id="grid"></div>
 
     <script>
-        const container = document.getElementById('grid');
-        const glowCursor = document.getElementById('glow-cursor');
-        const squareSize = 25;
-        
+        const grid = document.getElementById('grid');
+        const squareSize = 30;
         const cols = Math.ceil(window.innerWidth / squareSize);
         const rows = Math.ceil(window.innerHeight / squareSize);
         const total = cols * rows;
-
         const items = [];
 
+        // Initialize Grid
         for (let i = 0; i < total; i++) {
             const wrapper = document.createElement('div');
             wrapper.classList.add('grid-item');
@@ -96,56 +86,65 @@
             const line = document.createElement('div');
             line.classList.add('line');
             
-            // Randomize line properties
-            const randomRotate = Math.floor(Math.random() * 360);
-            const randomLength = 10 + Math.random() * 25;
-            const randomWidth = 1 + Math.random() * 2;
-            
-            line.style.setProperty('--random-rotate', `${randomRotate}deg`);
-            line.style.setProperty('--line-length', `${randomLength}px`);
-            line.style.setProperty('--line-width', `${randomWidth}px`);
+            // Give each line a unique random length for the "Random" look
+            const randomHeight = 10 + Math.random() * 20;
+            line.style.height = `${randomHeight}px`;
 
             wrapper.appendChild(line);
-            container.appendChild(wrapper);
-            items.push({ wrapper, line });
+            grid.appendChild(wrapper);
+            
+            // Store coordinates for performance
+            items.push({ 
+                element: line, 
+                wrapper: wrapper,
+                x: 0, 
+                y: 0 
+            });
         }
 
-        function handleMove(e) {
-            const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-            const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-
-            // Update Framer-style Glow Cursor
-            glowCursor.style.opacity = "1";
-            glowCursor.style.left = `${x}px`;
-            glowCursor.style.top = `${y}px`;
-
-            const radius = 60; 
-
+        // Cache positions once to avoid layout thrashing
+        function updateLayout() {
             items.forEach(item => {
                 const rect = item.wrapper.getBoundingClientRect();
-                const itemX = rect.left + rect.width / 2;
-                const itemY = rect.top + rect.height / 2;
+                item.x = rect.left + rect.width / 2;
+                item.y = rect.top + rect.height / 2;
+            });
+        }
+        window.addEventListener('resize', updateLayout);
+        updateLayout();
 
-                const distance = Math.sqrt((x - itemX) ** 2 + (y - itemY) ** 2);
+        function handleMove(e) {
+            const mouseX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const mouseY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+
+            const radius = 80; // Radius of the Prisma effect
+
+            items.forEach(item => {
+                const dx = mouseX - item.x;
+                const dy = mouseY - item.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < radius) {
-                    item.line.classList.add('active');
+                    // Calculate angle so lines point toward cursor
+                    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
                     
+                    item.element.style.transform = `rotate(${angle + 90}deg) scaleY(1.5)`;
+                    item.element.classList.add('active');
+
+                    // Brief timeout to allow the class to be removed for the fade transition
                     setTimeout(() => {
-                        item.line.classList.remove('active');
-                    }, 150);
+                        item.element.classList.remove('active');
+                        item.element.style.transform = `rotate(${angle + 90}deg) scaleY(1)`;
+                    }, 50);
                 }
             });
         }
 
         window.addEventListener('mousemove', handleMove);
-        window.addEventListener('touchstart', () => glowCursor.style.opacity = "1");
         window.addEventListener('touchmove', (e) => {
+            e.preventDefault();
             handleMove(e);
         }, { passive: false });
-
-        // Fade out glow card when mouse leaves
-        window.addEventListener('mouseout', () => glowCursor.style.opacity = "0");
     </script>
 </body>
 </html>

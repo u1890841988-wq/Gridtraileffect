@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Website Ideen Kit</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ── VARS ────────────────────────────────────────────── */
 :root {
@@ -25,9 +25,10 @@ html, body { height: 100%; overflow: hidden; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   cursor: default;
   user-select: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ── GRAIN ───────────────────────────────────────────── */
@@ -76,9 +77,8 @@ nav {
 }
 
 .nav-list button {
-  background: none; border: none; font-family: 'Syne', sans-serif;
+  background: none; border: none; font-family: 'Inter', sans-serif;
   font-size: 0.78rem; font-weight: 600;
-  letter-spacing: 0.03em;
   color: var(--muted);
   padding: 8px 14px; border-radius: 8px;
   cursor: pointer;
@@ -89,7 +89,6 @@ nav {
 .nav-list button:hover { color: var(--text); background: rgba(252,213,91,0.05); }
 .nav-list button.active { color: var(--accent); }
 
-/* animated SVG underline – draws from centre outward */
 .nav-list button svg {
   position: absolute; bottom: 3px; left: 14px;
   width: calc(100% - 28px); height: 3px;
@@ -117,11 +116,9 @@ nav {
 .page.active { opacity: 1; pointer-events: all; transform: translateY(0); }
 
 /* HOME PAGE */
-#page-home {
-  justify-content: center; text-align: center;
-}
+#page-home { justify-content: center; text-align: center; }
 .home-badge {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.62rem; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--accent);
   opacity: 0.75; margin-bottom: 20px;
@@ -146,18 +143,19 @@ nav {
   color: var(--dim); background: rgba(252,213,91,0.03);
   cursor: pointer; transition: all 0.2s;
   display: flex; align-items: center; gap: 7px;
+  backface-visibility: hidden;
 }
 .home-chip:hover {
   border-color: rgba(252,213,91,0.4); color: var(--accent);
   background: rgba(252,213,91,0.06);
-  transform: translateY(-2px);
+  transform: translateY(-2px) translateZ(0);
   box-shadow: 0 8px 24px rgba(252,213,91,0.08);
 }
 
-/* SECTION HEADERS (shared) */
+/* SECTION HEADERS */
 .sec-head { text-align: center; max-width: 580px; margin-bottom: 52px; }
 .sec-tag {
-  font-family: 'DM Mono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.6rem; letter-spacing: 0.24em;
   text-transform: uppercase; color: var(--accent);
   opacity: 0.7; margin-bottom: 12px;
@@ -196,8 +194,13 @@ nav {
   border-radius: 16px; border: 1px solid var(--border);
   background: var(--card); overflow: hidden;
   transition: border-color 0.3s, transform 0.3s cubic-bezier(.22,1,.36,1);
+  transform: translateZ(0); /* Anti-Flimmern */
+  backface-visibility: hidden;
 }
-.glow-card:hover { border-color: rgba(252,213,91,0.25); transform: translateY(-5px); }
+.glow-card:hover { 
+  border-color: rgba(252,213,91,0.25); 
+  transform: translateY(-5px) translateZ(0); 
+}
 .glow-beam {
   position: absolute; inset: 0; pointer-events: none;
   opacity: 0; transition: opacity 0.3s; border-radius: 16px;
@@ -211,7 +214,7 @@ nav {
 .ci { font-size: 1.5rem; width: 46px; height: 46px; border-radius: 10px;
   background: rgba(252,213,91,0.07); border: 1px solid rgba(252,213,91,0.15);
   display: flex; align-items: center; justify-content: center; }
-.ct { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.18em;
+.ct { font-family:'JetBrains Mono',monospace; font-size:0.6rem; letter-spacing:0.18em;
   text-transform:uppercase; color:var(--accent); opacity:0.7; }
 .cn { font-size:1rem; font-weight:700; line-height:1.3; }
 .cb { font-size:0.81rem; color:var(--muted); line-height:1.65; }
@@ -239,6 +242,7 @@ nav {
   transition: transform 0.18s cubic-bezier(.34,1.56,.64,1),
               background 0.28s, border-color 0.28s;
   will-change: transform;
+  transform: translateZ(0); /* Anti-Flimmern */
 }
 
 /* ═══════════════════════════════════════════
@@ -256,23 +260,24 @@ nav {
 .mag-btn {
   position: relative; border: 1.5px solid var(--border);
   border-radius: 999px; background: var(--card);
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--dim);
   padding: 16px 36px;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
+  transform: translateZ(0); /* Anti-Flimmern */
 }
 .mag-btn span { position: relative; z-index: 1; pointer-events: none; display: block; }
 .mag-btn .btn-bg {
   position: absolute; inset: -2px; border-radius: 999px;
   background: var(--accent);
-  transform: scale(0); transform-origin: center;
+  transform: scale(0) translateZ(0); transform-origin: center;
   transition: transform 0.38s cubic-bezier(.22,1,.36,1);
   z-index: 0;
 }
-.mag-btn.active-fill .btn-bg { transform: scale(1); }
+.mag-btn.active-fill .btn-bg { transform: scale(1) translateZ(0); }
 .mag-btn.active-fill { color: var(--bg); border-color: var(--accent); }
 
 /* ═══════════════════════════════════════════
@@ -286,13 +291,13 @@ nav {
   display: flex; flex-direction: column; gap: 24px;
 }
 .scramble-line {
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
-  font-weight: 800; letter-spacing: -0.02em;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1.2rem, 3vw, 2.2rem);
+  font-weight: 700; letter-spacing: -0.02em;
   color: var(--text); cursor: default; line-height: 1.1;
   transition: color 0.2s;
 }
 .scramble-line:hover { color: var(--accent); }
-.scramble-line .char { display: inline-block; }
 
 /* ═══════════════════════════════════════════
    6  INFINITE TICKER
@@ -303,6 +308,7 @@ nav {
   border: 1px solid var(--border); background: rgb(9,9,7);
   overflow: hidden; padding: 40px 0;
   display: flex; flex-direction: column; gap: 28px;
+  transform: translateZ(0);
 }
 .ticker-row { display: flex; width: max-content; }
 .ticker-track {
@@ -339,6 +345,8 @@ nav {
   transform-style: preserve-3d;
   transition: box-shadow 0.3s;
   cursor: default;
+  transform: translateZ(0); /* Anti-Flimmern Basis */
+  will-change: transform;
 }
 .tilt-card:hover {
   box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(252,213,91,0.08);
@@ -359,7 +367,7 @@ nav {
 }
 .tilt-icon { font-size: 2rem; }
 .tilt-num {
-  font-family: 'DM Mono', monospace; font-size: 0.58rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
   letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--accent); opacity: 0.65;
 }
@@ -376,8 +384,7 @@ nav {
 }
 .tilt-card::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg,
-    rgba(252,213,91,0.04) 0%, transparent 55%);
+  background: linear-gradient(135deg, rgba(252,213,91,0.04) 0%, transparent 55%);
   border-radius: 18px; z-index: 1;
 }
 
@@ -394,7 +401,6 @@ nav {
 <div id="grain"></div>
 <div id="spotlight"></div>
 
-<!-- ── NAV ──────────────────────────────────────────────── -->
 <nav>
   <span class="logo">Ideen Kit</span>
   <ul class="nav-list" id="nav-list">
@@ -409,9 +415,6 @@ nav {
   </ul>
 </nav>
 
-<!-- ════════════════ PAGES ════════════════ -->
-
-<!-- HOME -->
 <div class="page active" id="page-home">
   <p class="home-badge">✦ Website Ideen Kit</p>
   <h1 class="home-title">Modern<br/><em>UI</em><br/>Components</h1>
@@ -427,17 +430,15 @@ nav {
   </div>
 </div>
 
-<!-- PRISMA GRID -->
 <div class="page" id="page-prisma">
   <div class="sec-head">
     <p class="sec-tag">01 — Prisma Grid</p>
     <h2 class="sec-title">Squares that<br/><em>track your cursor</em></h2>
-    <p class="sec-desc">Dense field of small squares rotating exactly toward the mouse using Math.atan2 — gold glow on approach, 2-second fade out on leave.</p>
+    <p class="sec-desc">A continuous grid that scales, rotates and illuminates based on mouse proximity. Smooth Framer-like interactions.</p>
   </div>
   <div id="prisma-wrap"><canvas id="prisma-canvas"></canvas></div>
 </div>
 
-<!-- GLOW CARDS -->
 <div class="page" id="page-glow">
   <div class="sec-head">
     <p class="sec-tag">02 — Glow Cards</p>
@@ -447,7 +448,6 @@ nav {
   <div class="glow-row" id="glow-row"></div>
 </div>
 
-<!-- RIPPLE GRID -->
 <div class="page" id="page-ripple">
   <div class="sec-head">
     <p class="sec-tag">03 — Ripple Grid</p>
@@ -457,7 +457,6 @@ nav {
   <div id="ripple-wrap"><div id="ripple-grid"></div></div>
 </div>
 
-<!-- MAGNETIC BUTTONS -->
 <div class="page" id="page-mag">
   <div class="sec-head">
     <p class="sec-tag">04 — Magnetic Buttons</p>
@@ -467,17 +466,15 @@ nav {
   <div class="mag-stage" id="mag-stage"></div>
 </div>
 
-<!-- TEXT SCRAMBLE -->
 <div class="page" id="page-scramble">
   <div class="sec-head">
     <p class="sec-tag">05 — Text Scramble</p>
     <h2 class="sec-title">Characters that<br/><em>reveal themselves</em></h2>
-    <p class="sec-desc">Hover any line to trigger a random character scramble that resolves back to the original text — chaotic then precise.</p>
+    <p class="sec-desc">Hover any line to trigger a clean matrix-style decode sequence resolving from left to right.</p>
   </div>
   <div class="scramble-stage" id="scramble-stage"></div>
 </div>
 
-<!-- TICKER -->
 <div class="page" id="page-ticker">
   <div class="sec-head">
     <p class="sec-tag">06 — Infinite Ticker</p>
@@ -487,7 +484,6 @@ nav {
   <div class="ticker-outer" id="ticker-outer"></div>
 </div>
 
-<!-- 3D TILT CARDS -->
 <div class="page" id="page-tilt">
   <div class="sec-head">
     <p class="sec-tag">07 — 3D Tilt Cards</p>
@@ -521,7 +517,6 @@ function showPage(id) {
   navBtns.forEach(b => { if (b.dataset.page === id) b.classList.add('active'); });
 }
 
-/* animated underline – draws from centre outward */
 function animateUnderline(btn, dir) {
   const path = btn.querySelector('svg path');
   if (!path) return;
@@ -547,30 +542,27 @@ navBtns.forEach(btn => {
   });
 });
 
-/* home chips */
 document.querySelectorAll('.home-chip[data-goto]').forEach(chip => {
   chip.addEventListener('click', () => showPage(chip.dataset.goto));
 });
 
-/* draw active underlines on load */
 navBtns.forEach(btn => {
   if (btn.classList.contains('active')) animateUnderline(btn, 'in');
 });
 
 /* ══════════════════════════════════════════════════════
-   1 · PRISMA GRID – small squares pointing at cursor
+   1 · PRISMA GRID (Neu: Framer-Style, fließend)
 ══════════════════════════════════════════════════════ */
 (function() {
   const wrap   = document.getElementById('prisma-wrap');
   const canvas = document.getElementById('prisma-canvas');
   const ctx    = canvas.getContext('2d');
 
-  const GAP      = 28;
-  const SQ       = 5;      /* half-size of each square */
-  const NEAR     = 140;
-  const FADE_MS  = 2000;
+  const GAP      = 32;     // Abstand zw. Quadern
+  const SQ       = 4;      // Basis-Größe (halbe Breite)
+  const MAX_DIST = 220;    // Wie weit die Maus wirkt
 
-  let W, H, grid = [], mouse = { x:-9999, y:-9999 }, inside = false;
+  let W, H, grid = [], mouse = { x:-9999, y:-9999 }, targetMouse = { x:-9999, y:-9999 };
 
   function resize() {
     const r = wrap.getBoundingClientRect();
@@ -584,53 +576,62 @@ navBtns.forEach(btn => {
 
   function build() {
     grid = [];
-    const cols = Math.floor(W / GAP);
-    const rows = Math.floor(H / GAP);
+    const cols = Math.floor(W / GAP) + 1;
+    const rows = Math.floor(H / GAP) + 1;
     const ox = (W - (cols-1)*GAP) / 2;
     const oy = (H - (rows-1)*GAP) / 2;
     for (let r = 0; r < rows; r++)
       for (let c = 0; c < cols; c++)
-        grid.push({ x: ox+c*GAP, y: oy+r*GAP, angle: 0, op: 0, sc: 1, hit: -Infinity });
+        grid.push({ x: ox+c*GAP, y: oy+r*GAP, baseAngle: 0 });
   }
 
   canvas.addEventListener('mousemove', e => {
     const r = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - r.left;
-    mouse.y = e.clientY - r.top;
-    inside = true;
+    targetMouse.x = e.clientX - r.left;
+    targetMouse.y = e.clientY - r.top;
   });
-  canvas.addEventListener('mouseleave', () => { inside = false; });
+  canvas.addEventListener('mouseleave', () => { 
+    targetMouse.x = -9999; targetMouse.y = -9999; 
+  });
 
-  function draw(ts) {
+  function draw() {
     ctx.clearRect(0, 0, W, H);
-    for (let i = 0, n = grid.length; i < n; i++) {
-      const g  = grid[i];
-      const dx = mouse.x - g.x, dy = mouse.y - g.y;
-      const d  = Math.sqrt(dx*dx + dy*dy);
+    
+    // Smooth mouse follow
+    mouse.x += (targetMouse.x - mouse.x) * 0.15;
+    mouse.y += (targetMouse.y - mouse.y) * 0.15;
 
-      if (inside && d < NEAR) {
-        const prox = 1 - d / NEAR;
-        g.angle = Math.atan2(dy, dx);
-        g.op    = 0.25 + prox * 0.75;
-        g.sc    = 1 + prox * 1.4;
-        g.hit   = ts;
-      } else {
-        const el = ts - g.hit;
-        g.op = el < FADE_MS ? Math.max(0, 1 - el/FADE_MS) : 0;
-        g.sc = 1 + (g.op * 1.4);
+    for (let i = 0, n = grid.length; i < n; i++) {
+      const g = grid[i];
+      const dx = mouse.x - g.x, dy = mouse.y - g.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      let scale = 1;
+      let alpha = 0.15; // Basis-Sichtbarkeit des Grids
+      let angle = 0;
+
+      if (dist < MAX_DIST) {
+        // Weiche Kurve basierend auf Nähe
+        const prox = 1 - Math.pow(dist / MAX_DIST, 1.5);
+        scale = 1 + prox * 2.5;  // Vergrößern bei Nähe
+        alpha = 0.15 + prox * 0.85; // Heller bei Nähe
+        angle = Math.atan2(dy, dx); // Zum Cursor rotieren
       }
 
-      if (g.op < 0.01) continue;
-
-      const s = SQ * g.sc;
       ctx.save();
-      ctx.globalAlpha  = g.op;
+      ctx.globalAlpha = alpha;
       ctx.translate(g.x, g.y);
-      ctx.rotate(g.angle);
-      ctx.shadowColor  = 'rgba(252,213,91,0.95)';
-      ctx.shadowBlur   = 7 * g.op;
-      ctx.fillStyle    = `rgba(252,213,91,${g.op})`;
-      ctx.fillRect(-s, -s, s*2, s*2);
+      if (dist < MAX_DIST) ctx.rotate(angle);
+      
+      // Farbe & Glow
+      ctx.fillStyle = `rgb(252,213,91)`;
+      if (dist < MAX_DIST) {
+          ctx.shadowColor = 'rgba(252,213,91,0.6)';
+          ctx.shadowBlur = scale * 4;
+      }
+      
+      const s = SQ * scale;
+      ctx.fillRect(-s/2, -s/2, s, s);
       ctx.restore();
     }
     requestAnimationFrame(draw);
@@ -717,11 +718,11 @@ navBtns.forEach(btn => {
 
         setTimeout(() => {
           const el = cells[r][c];
-          el.style.transform   = `scale(${scale})`;
+          el.style.transform   = `scale(${scale}) translateZ(0)`;
           el.style.background  = `rgba(252,213,91,${alpha})`;
           el.style.borderColor = `rgba(252,213,91,${0.15 + prox*0.5})`;
           const t = setTimeout(() => {
-            el.style.transform   = 'scale(1)';
+            el.style.transform   = 'scale(1) translateZ(0)';
             el.style.background  = 'rgb(26,25,20)';
             el.style.borderColor = 'rgba(252,213,91,0.05)';
             waves.delete(key);
@@ -753,7 +754,7 @@ navBtns.forEach(btn => {
     stage.appendChild(btn);
 
     const STRENGTH = 0.38, FILL_DIST = 90;
-    let ox = 0, oy = 0, raf;
+    let ox = 0, oy = 0;
 
     btn.addEventListener('mousemove', e => {
       const r  = btn.getBoundingClientRect();
@@ -763,7 +764,7 @@ navBtns.forEach(btn => {
 
       ox = dx * STRENGTH;
       oy = dy * STRENGTH;
-      btn.style.transform = `translate(${ox}px,${oy}px)`;
+      btn.style.transform = `translate(${ox}px,${oy}px) translateZ(0)`;
 
       if (d < FILL_DIST) {
         btn.classList.add('active-fill');
@@ -773,24 +774,24 @@ navBtns.forEach(btn => {
     });
 
     btn.addEventListener('mouseleave', () => {
-      btn.style.transform = 'translate(0px,0px)';
+      btn.style.transform = 'translate(0px,0px) translateZ(0)';
       btn.classList.remove('active-fill');
     });
   });
 })();
 
 /* ══════════════════════════════════════════════════════
-   5 · TEXT SCRAMBLE
+   5 · TEXT SCRAMBLE (Neu: Decode Left to Right)
 ══════════════════════════════════════════════════════ */
 (function() {
   const lines = [
-    'Interface Design',
-    'Motion Systems',
-    'Component Library',
-    'Visual Identity',
-    'Interaction Patterns',
+    'Interface_Design.tsx',
+    'Motion_Systems.config',
+    'Component_Library.js',
+    'Visual_Identity.css',
+    'Interaction_Patterns.md',
   ];
-  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@$%&';
+  const CHARS = '!<>-_\\/[]{}—=+*^?#_';
   const stage = document.getElementById('scramble-stage');
 
   lines.forEach(text => {
@@ -799,36 +800,34 @@ navBtns.forEach(btn => {
     div.textContent = text;
     stage.appendChild(div);
 
-    let animId, running = false;
+    let frameRequest;
+    let isAnimating = false;
 
     div.addEventListener('mouseenter', () => {
-      if (running) return;
-      running = true;
-      const chars = text.split('');
-      const total = chars.length;
-      let frame = 0;
-      const maxFrames = total * 3;
+      if (isAnimating) return;
+      isAnimating = true;
+      
+      let iteration = 0;
+      cancelAnimationFrame(frameRequest);
 
-      cancelAnimationFrame(animId);
-      (function loop() {
-        let out = '';
-        for (let i = 0; i < total; i++) {
-          if (chars[i] === ' ') { out += ' '; continue; }
-          if (frame > i * 3) {
-            out += chars[i];
-          } else {
-            out += CHARS[Math.floor(Math.random() * CHARS.length)];
+      const loop = () => {
+        div.innerText = text.split('').map((letter, index) => {
+          if(index < iteration) {
+            return text[index];
           }
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        }).join('');
+        
+        if(iteration >= text.length){
+          isAnimating = false;
+          return;
         }
-        div.textContent = out;
-        frame++;
-        if (frame <= maxFrames) {
-          animId = requestAnimationFrame(loop);
-        } else {
-          div.textContent = text;
-          running = false;
-        }
-      })();
+        
+        iteration += 1 / 3; // Bestimmt die Geschwindigkeit des Decodierens
+        frameRequest = requestAnimationFrame(loop);
+      };
+      
+      frameRequest = requestAnimationFrame(loop);
     });
   });
 })();
@@ -850,7 +849,6 @@ navBtns.forEach(btn => {
     const track = document.createElement('div');
     track.className = 'ticker-track' + (i===1 ? ' rev' : '');
 
-    /* duplicate for seamless loop */
     const all = [...row.items, ...row.items];
     all.forEach(item => {
       const span = document.createElement('span');
@@ -898,14 +896,14 @@ navBtns.forEach(btn => {
       const x  = (e.clientX - r.left) / r.width;
       const y  = (e.clientY - r.top)  / r.height;
       const rx = (y - 0.5) * -MAX * 2;
-      const ry = (x - 0.5) *  MAX * 2;
-      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.04)`;
+      const ry = (x - 0.5) * MAX * 2;
+      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.04) translateZ(0)`;
       shine.style.setProperty('--sx', (x*100).toFixed(1)+'%');
       shine.style.setProperty('--sy', (y*100).toFixed(1)+'%');
     });
 
     card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
+      card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1) translateZ(0)';
     });
   });
 })();

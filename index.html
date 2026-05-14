@@ -3,15 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Trail Grid</title>
+    <title>Glow Trail Grid - Numecraft Theme</title>
     <style>
+        /* CSS to define the new theme based on image_0.png */
+        :root {
+            --bg-color-top: #0e0d0a; /* Darker, slightly greenish-brown */
+            --bg-color-bottom: #1c180e; /* Lighter, dark gold-brown */
+            --text-color: #f7e09b; /* Lighter yellow/off-white for text */
+            --primary-accent: #fcd55b; /* Brighter gold for active elements */
+            --glow-color: rgba(252, 213, 91, 0.6); /* Gold-colored glow */
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #000;
+            background: linear-gradient(to bottom, var(--bg-color-top), var(--bg-color-bottom));
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            color: var(--text-color);
+            font-family: Arial, sans-serif; /* Fallback font */
+        }
+
+        /* Centered message to replace the original content and guide the user */
+        .centered-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10; /* Make sure it's above the grid */
+            pointer-events: none; /* Important: prevents text from capturing clicks */
+        }
+
+        .centered-content h1 {
+            font-size: 3em;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5em;
+        }
+
+        .centered-content p {
+            font-size: 1.2em;
+            color: #d1b87a; /* Muted gold-brown for description */
         }
 
         .grid-container {
@@ -21,41 +55,58 @@
             grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));
             width: 100vw;
             height: 100vh;
+            z-index: 1; /* Below the text content */
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         .grid-item {
             width: 100%;
             height: 100%;
-            background-color: transparent;
+            background-color: transparent; /* Initially invisible */
             /* The 2-second fade away */
             transition: background-color 2s ease, box-shadow 2s ease;
         }
 
-        /* Random Background Twinkle */
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 0.2; background-color: #9d50bb; }
-        }
+        /* --- Theme-Specific Tweaks --- */
 
-        .twinkle-active::before {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 100%;
-            animation: twinkle 5s infinite;
-        }
-
-        /* The Cursor Glow State */
+        /* Updated active state for the Numecraft theme */
         .grid-item.active {
-            background-color: #00d2ff;
-            background-image: linear-gradient(135deg, #00d2ff, #9d50bb);
-            box-shadow: 0 0 15px #00d2ff, 0 0 30px #9d50bb;
+            background-color: var(--primary-accent);
+            background-image: none; /* No linear gradient needed, solid color works better for the theme */
+            box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); /* More refined glow */
             transition: 0s; /* Instant color on touch */
             z-index: 5;
         }
+
+        /* Twinkle is NOT used in this version to meet user requirements */
+        
+        /* Add a subtle visual hint for where to interact */
+        .interaction-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8em;
+            color: #d1b87a;
+            z-index: 15;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
+
+    <div class="centered-content">
+        <h1>BUILD BETTER</h1>
+        <h1>TRAILS</h1>
+        <p>A new theme based on image_0.png.</p>
+        <p>(Grid twinkle is disabled as requested)</p>
+    </div>
+
+    <div class="interaction-hint">
+        Move cursor or tap/drag to see the effect.
+    </div>
 
     <div class="grid-container" id="grid"></div>
 
@@ -74,12 +125,8 @@
             const item = document.createElement('div');
             item.classList.add('grid-item');
             
-            // Randomly assign twinkle to some boxes
-            if (Math.random() > 0.95) {
-                item.classList.add('twinkle-active');
-                item.style.animationDelay = `${Math.random() * 5}s`;
-            }
-
+            // Random twinkling is *REMOVED* here as requested. All grid-items start empty and invisible.
+            
             container.appendChild(item);
             items.push(item);
         }
@@ -88,7 +135,7 @@
             const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
             const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
 
-            // Radius in pixels (approx 2-3 boxes)
+            // Radius in pixels (approx 2-3 boxes). This creates the local effect.
             const radius = 50; 
 
             items.forEach(item => {
@@ -99,11 +146,19 @@
                 const distance = Math.sqrt((x - itemX) ** 2 + (y - itemY) ** 2);
 
                 if (distance < radius) {
+                    // Normalize the distance within the radius to apply an effect
+                    // 0 = center, 1 = edge of radius
+                    const normalizedDist = Math.max(0, 1 - (distance / radius));
+                    
                     item.classList.add('active');
+                    
+                    // Add subtle brightness variance based on center proximity
+                    item.style.opacity = 0.6 + normalizedDist * 0.4;
                     
                     // Remove class quickly so the CSS transition handles the fade
                     setTimeout(() => {
                         item.classList.remove('active');
+                        item.style.opacity = ''; // Reset opacity
                     }, 100);
                 }
             });
@@ -114,6 +169,10 @@
         window.addEventListener('touchmove', (e) => {
             handleMove(e);
         }, { passive: false });
+
+        // Optimization: Debounce the move event for better performance
+        // const debouncedMove = debounce(handleMove, 10);
+        // window.addEventListener('mousemove', debouncedMove);
 
     </script>
 </body>

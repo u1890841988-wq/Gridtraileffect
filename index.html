@@ -3,116 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Trail Grid - Numecraft Theme</title>
+    <title>Numecraft Trail</title>
     <style>
-        /* CSS to define the new theme based on image_0.png */
         :root {
-            --bg-color-top: #0e0d0a; /* Darker, slightly greenish-brown */
-            --bg-color-bottom: #1c180e; /* Lighter, dark gold-brown */
-            --text-color: #f7e09b; /* Lighter yellow/off-white for text */
-            --primary-accent: #fcd55b; /* Brighter gold for active elements */
-            --glow-color: rgba(252, 213, 91, 0.6); /* Gold-colored glow */
+            --bg-top: #0e0d0a;
+            --bg-bottom: #1c180e;
+            --gold: #fcd55b;
+            --glow: rgba(252, 213, 91, 0.4);
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, var(--bg-color-top), var(--bg-color-bottom));
+            background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            color: var(--text-color);
-            font-family: Arial, sans-serif; /* Fallback font */
+            cursor: none; /* Hide cursor to emphasize the glow card effect */
         }
 
-        /* Centered message to replace the original content and guide the user */
-        .centered-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+        /* The Framer-style Glow Card Cursor */
+        #glow-cursor {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
             transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 10; /* Make sure it's above the grid */
-            pointer-events: none; /* Important: prevents text from capturing clicks */
-        }
-
-        .centered-content h1 {
-            font-size: 3em;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5em;
-        }
-
-        .centered-content p {
-            font-size: 1.2em;
-            color: #d1b87a; /* Muted gold-brown for description */
+            z-index: 10;
+            transition: opacity 0.3s ease;
+            opacity: 0;
         }
 
         .grid-container {
             display: grid;
-            /* Smaller boxes: 20px each */
-            grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
-            grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(25px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(25px, 1fr));
             width: 100vw;
             height: 100vh;
-            z-index: 1; /* Below the text content */
             position: absolute;
             top: 0;
             left: 0;
         }
 
         .grid-item {
-            width: 100%;
-            height: 100%;
-            background-color: transparent; /* Initially invisible */
-            /* The 2-second fade away */
-            transition: background-color 2s ease, box-shadow 2s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* --- Theme-Specific Tweaks --- */
-
-        /* Updated active state for the Numecraft theme */
-        .grid-item.active {
-            background-color: var(--primary-accent);
-            background-image: none; /* No linear gradient needed, solid color works better for the theme */
-            box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); /* More refined glow */
-            transition: 0s; /* Instant color on touch */
-            z-index: 5;
+        /* The "Line" inside each cell */
+        .line {
+            width: var(--line-width, 2px);
+            height: var(--line-length, 0px);
+            background-color: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
+            border-radius: 10px;
+            transform: rotate(var(--random-rotate));
+            transition: height 0.1s ease, background-color 2s ease, box-shadow 2s ease, opacity 2s ease;
+            opacity: 0;
         }
 
-        /* Twinkle is NOT used in this version to meet user requirements */
-        
-        /* Add a subtle visual hint for where to interact */
-        .interaction-hint {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.8em;
-            color: #d1b87a;
-            z-index: 15;
-            pointer-events: none;
+        .line.active {
+            opacity: 1;
+            height: var(--line-length);
+            transition: none; /* Instant grow on touch */
         }
-
     </style>
 </head>
 <body>
 
-    <div class="centered-content">
-        <h1>BUILD BETTER</h1>
-        <h1>TRAILS</h1>
-        <p>A new theme based on image_0.png.</p>
-        <p>(Grid twinkle is disabled as requested)</p>
-    </div>
-
-    <div class="interaction-hint">
-        Move cursor or tap/drag to see the effect.
-    </div>
-
+    <div id="glow-cursor"></div>
     <div class="grid-container" id="grid"></div>
 
     <script>
         const container = document.getElementById('grid');
-        const squareSize = 20; // Size of each box
+        const glowCursor = document.getElementById('glow-cursor');
+        const squareSize = 25;
         
         const cols = Math.ceil(window.innerWidth / squareSize);
         const rows = Math.ceil(window.innerHeight / squareSize);
@@ -120,60 +89,63 @@
 
         const items = [];
 
-        // Create Grid
         for (let i = 0; i < total; i++) {
-            const item = document.createElement('div');
-            item.classList.add('grid-item');
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('grid-item');
             
-            // Random twinkling is *REMOVED* here as requested. All grid-items start empty and invisible.
+            const line = document.createElement('div');
+            line.classList.add('line');
             
-            container.appendChild(item);
-            items.push(item);
+            // Randomize line properties
+            const randomRotate = Math.floor(Math.random() * 360);
+            const randomLength = 10 + Math.random() * 25;
+            const randomWidth = 1 + Math.random() * 2;
+            
+            line.style.setProperty('--random-rotate', `${randomRotate}deg`);
+            line.style.setProperty('--line-length', `${randomLength}px`);
+            line.style.setProperty('--line-width', `${randomWidth}px`);
+
+            wrapper.appendChild(line);
+            container.appendChild(wrapper);
+            items.push({ wrapper, line });
         }
 
         function handleMove(e) {
             const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
             const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
 
-            // Radius in pixels (approx 2-3 boxes). This creates the local effect.
-            const radius = 50; 
+            // Update Framer-style Glow Cursor
+            glowCursor.style.opacity = "1";
+            glowCursor.style.left = `${x}px`;
+            glowCursor.style.top = `${y}px`;
+
+            const radius = 60; 
 
             items.forEach(item => {
-                const rect = item.getBoundingClientRect();
+                const rect = item.wrapper.getBoundingClientRect();
                 const itemX = rect.left + rect.width / 2;
                 const itemY = rect.top + rect.height / 2;
 
                 const distance = Math.sqrt((x - itemX) ** 2 + (y - itemY) ** 2);
 
                 if (distance < radius) {
-                    // Normalize the distance within the radius to apply an effect
-                    // 0 = center, 1 = edge of radius
-                    const normalizedDist = Math.max(0, 1 - (distance / radius));
+                    item.line.classList.add('active');
                     
-                    item.classList.add('active');
-                    
-                    // Add subtle brightness variance based on center proximity
-                    item.style.opacity = 0.6 + normalizedDist * 0.4;
-                    
-                    // Remove class quickly so the CSS transition handles the fade
                     setTimeout(() => {
-                        item.classList.remove('active');
-                        item.style.opacity = ''; // Reset opacity
-                    }, 100);
+                        item.line.classList.remove('active');
+                    }, 150);
                 }
             });
         }
 
-        // Listeners for both Mouse and Touch
         window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchstart', () => glowCursor.style.opacity = "1");
         window.addEventListener('touchmove', (e) => {
             handleMove(e);
         }, { passive: false });
 
-        // Optimization: Debounce the move event for better performance
-        // const debouncedMove = debounce(handleMove, 10);
-        // window.addEventListener('mousemove', debouncedMove);
-
+        // Fade out glow card when mouse leaves
+        window.addEventListener('mouseout', () => glowCursor.style.opacity = "0");
     </script>
 </body>
 </html>

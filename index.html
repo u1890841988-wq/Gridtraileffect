@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Grid Trail</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+
+        .grid-container {
+            display: grid;
+            /* Adjust columns and rows based on screen size */
+            grid-template-columns: repeat(20, 1fr);
+            grid-template-rows: repeat(20, 1fr);
+            gap: 4px;
+            width: 90vw;
+            height: 90vh;
+        }
+
+        .grid-item {
+            background-color: #1a1a1a;
+            border-radius: 2px;
+            transition: transform 0.1s ease-out, background-color 0.4s ease;
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-container" id="grid"></div>
+
+    <script>
+        const gridContainer = document.getElementById('grid');
+        const totalItems = 400; // 20x20 grid
+
+        // Create grid elements
+        for (let i = 0; i < totalItems; i++) {
+            const item = document.createElement('div');
+            item.classList.add('grid-item');
+            gridContainer.appendChild(item);
+        }
+
+        const items = document.querySelectorAll('.grid-item');
+
+        window.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            items.forEach((item) => {
+                const rect = item.getBoundingClientRect();
+                const itemX = rect.left + rect.width / 2;
+                const itemY = rect.top + rect.height / 2;
+
+                // Calculate distance between mouse and each item
+                const distanceX = mouseX - itemX;
+                const distanceY = mouseY - itemY;
+                const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
+
+                // Define the "influence" radius
+                const maxDistance = 150;
+                
+                if (distance < maxDistance) {
+                    // Normalize the force (0 to 1)
+                    const force = (maxDistance - distance) / maxDistance;
+                    
+                    // Apply transformations
+                    const scale = 1 + force * 0.8;
+                    const rotation = force * 45;
+                    
+                    item.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+                    item.style.backgroundColor = `rgba(100, 200, 255, ${force})`;
+                    item.style.zIndex = "10";
+                } else {
+                    item.style.transform = 'scale(1) rotate(0deg)';
+                    item.style.backgroundColor = '#1a1a1a';
+                    item.style.zIndex = "1";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

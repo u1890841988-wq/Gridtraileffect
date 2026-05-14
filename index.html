@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Glowing Grid</title>
+    <title>Glow Trail Grid</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #050505;
+            background-color: #000;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
@@ -16,46 +16,42 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-            grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+            /* Smaller boxes: 20px each */
+            grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));
             width: 100vw;
             height: 100vh;
         }
 
         .grid-item {
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            width: 100%;
+            height: 100%;
             background-color: transparent;
-            /* Fade out duration set to 2 seconds */
+            /* The 2-second fade away */
             transition: background-color 2s ease, box-shadow 2s ease;
         }
 
-        /* Random Twinkle Animation */
-        @keyframes randomGlow {
+        /* Random Background Twinkle */
+        @keyframes twinkle {
             0%, 100% { opacity: 0; }
-            50% { 
-                opacity: 0.3;
-                background-color: #9d50bb; 
-            }
+            50% { opacity: 0.2; background-color: #9d50bb; }
         }
 
-        .grid-item::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 0;
-            animation: randomGlow 8s infinite;
+        .twinkle-active::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            animation: twinkle 5s infinite;
         }
 
-        /* Cursor Interaction State */
+        /* The Cursor Glow State */
         .grid-item.active {
             background-color: #00d2ff;
-            background-image: linear-gradient(135deg, #00d2ff 0%, #9d50bb 100%);
-            box-shadow: 0 0 20px #00d2ff, 0 0 40px #9d50bb;
-            z-index: 2;
-            /* Instant glow on contact */
-            transition: 0s; 
-            opacity: 1 !important;
+            background-image: linear-gradient(135deg, #00d2ff, #9d50bb);
+            box-shadow: 0 0 15px #00d2ff, 0 0 30px #9d50bb;
+            transition: 0s; /* Instant color on touch */
+            z-index: 5;
         }
     </style>
 </head>
@@ -65,53 +61,60 @@
 
     <script>
         const container = document.getElementById('grid');
+        const squareSize = 20; // Size of each box
         
-        // Setup Grid
-        const squareSize = 35;
-        const columns = Math.ceil(window.innerWidth / squareSize);
+        const cols = Math.ceil(window.innerWidth / squareSize);
         const rows = Math.ceil(window.innerHeight / squareSize);
-        const totalSquares = columns * rows;
+        const total = cols * rows;
 
-        for (let i = 0; i < totalSquares; i++) {
-            const square = document.createElement('div');
-            square.classList.add('grid-item');
-            
-            // Assign a random animation delay to each square for the background glow
-            const delay = Math.random() * 10;
-            const duration = 5 + Math.random() * 5;
-            square.style.setProperty('--delay', `${delay}s`);
-            
-            // Inject the animation via JS to keep the delay random per item
-            const glowLayer = square.querySelector('::before');
-            square.style.animationDelay = `${delay}s`;
-            square.style.animationDuration = `${duration}s`;
+        const items = [];
 
-            // Mouse Events
-            square.addEventListener('mouseenter', () => handleInteraction(square));
+        // Create Grid
+        for (let i = 0; i < total; i++) {
+            const item = document.createElement('div');
+            item.classList.add('grid-item');
             
-            container.appendChild(square);
-        }
-
-        // Handle the "trail" logic
-        function handleInteraction(el) {
-            el.classList.add('active');
-            
-            // The class is removed quickly, but the CSS transition 
-            // keeps the color visible for 2 seconds.
-            setTimeout(() => {
-                el.classList.remove('active');
-            }, 150);
-        }
-
-        // Touch support for mobile dragging
-        container.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const target = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (target && target.classList.contains('grid-item')) {
-                handleInteraction(target);
+            // Randomly assign twinkle to some boxes
+            if (Math.random() > 0.95) {
+                item.classList.add('twinkle-active');
+                item.style.animationDelay = `${Math.random() * 5}s`;
             }
+
+            container.appendChild(item);
+            items.push(item);
+        }
+
+        function handleMove(e) {
+            const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+
+            // Radius in pixels (approx 2-3 boxes)
+            const radius = 50; 
+
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const itemX = rect.left + rect.width / 2;
+                const itemY = rect.top + rect.height / 2;
+
+                const distance = Math.sqrt((x - itemX) ** 2 + (y - itemY) ** 2);
+
+                if (distance < radius) {
+                    item.classList.add('active');
+                    
+                    // Remove class quickly so the CSS transition handles the fade
+                    setTimeout(() => {
+                        item.classList.remove('active');
+                    }, 100);
+                }
+            });
+        }
+
+        // Listeners for both Mouse and Touch
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchmove', (e) => {
+            handleMove(e);
         }, { passive: false });
+
     </script>
 </body>
 </html>

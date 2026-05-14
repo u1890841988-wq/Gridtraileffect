@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prisma Trail - Clean Gold Edition</title>
+    <title>Numecraft | Component Showcase</title>
     <style>
         :root {
             --bg-color: #0e0d0a;
             --gold: #fcd55b;
-            --glow: rgba(252, 213, 91, 0.5);
+            --gold-muted: #d1b87a;
+            --glow: rgba(252, 213, 91, 0.4);
+            --nav-bg: rgba(26, 24, 18, 0.8);
         }
 
         * {
@@ -19,132 +21,195 @@
 
         body {
             background-color: var(--bg-color);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
             height: 100vh;
             width: 100vw;
-            overflow: hidden;
+        }
+
+        /* --- NAVIGATION BAR (Framer Inspired) --- */
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            padding: 10px 25px;
+            border-radius: 40px;
+            border: 1px solid rgba(252, 213, 91, 0.2);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--gold-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        .nav-link:hover {
+            color: var(--gold);
+        }
+
+        /* SVG Underlink Animation logic */
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            box-shadow: 0 0 8px var(--gold);
+            transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* --- PRISMA SECTION --- */
+        .viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Full screen grid container */
-        .prisma-grid {
+        #glow-circle {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .grid-container {
             display: grid;
-            /* Dense grid for a smooth trail */
-            grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
-            grid-template-rows: repeat(auto-fill, minmax(30px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
             width: 100vw;
             height: 100vh;
             position: absolute;
         }
 
         .grid-item {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* The Prisma Line */
-        .line {
-            width: 2px;
-            height: 15px;
-            background-color: var(--gold);
+        /* Prism Shape (Styled Line) */
+        .prism {
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
             border-radius: 2px;
+            transform: rotate(var(--rotation)) skewX(10deg);
             opacity: 0;
-            /* 2 second fade out as requested */
-            transition: opacity 2s ease, transform 2s ease, background-color 2s ease;
-            will-change: transform, opacity;
+            transition: opacity 2s ease, transform 2s ease;
         }
 
-        /* Active state when cursor is near */
-        .line.active {
+        .prism.active {
             opacity: 1;
-            box-shadow: 0 0 12px var(--glow);
-            /* Instant appearance */
-            transition: none; 
+            box-shadow: 0 0 15px var(--gold);
+            transition: none; /* Immediate pop */
         }
     </style>
 </head>
 <body>
 
-    <div class="prisma-grid" id="grid"></div>
+    <nav>
+        <a href="#" class="nav-link" onclick="switchTab('Prisma')">Prisma Grid</a>
+        <a href="#" class="nav-link" onclick="switchTab('Glow')">Glow Cards</a>
+        <a href="#" class="nav-link" onclick="switchTab('Ripple')">Ripple Effect</a>
+    </nav>
+
+    <div class="viewport" id="main-viewport">
+        <div id="glow-circle"></div>
+        <div class="grid-container" id="grid"></div>
+    </div>
 
     <script>
         const grid = document.getElementById('grid');
-        const squareSize = 30;
+        const glow = document.getElementById('glow-circle');
+        const squareSize = 35;
         const cols = Math.ceil(window.innerWidth / squareSize);
         const rows = Math.ceil(window.innerHeight / squareSize);
         const total = cols * rows;
-        const items = [];
+        const prisms = [];
 
-        // Initialize Grid
+        // Generate Grid
         for (let i = 0; i < total; i++) {
-            const wrapper = document.createElement('div');
-            wrapper.classList.add('grid-item');
+            const wrap = document.createElement('div');
+            wrap.classList.add('grid-item');
             
-            const line = document.createElement('div');
-            line.classList.add('line');
+            const prism = document.createElement('div');
+            prism.classList.add('prism');
             
-            // Give each line a unique random length for the "Random" look
-            const randomHeight = 10 + Math.random() * 20;
-            line.style.height = `${randomHeight}px`;
+            // Random initial rotation for variety
+            prism.style.setProperty('--rotation', `${Math.random() * 360}deg`);
 
-            wrapper.appendChild(line);
-            grid.appendChild(wrapper);
-            
-            // Store coordinates for performance
-            items.push({ 
-                element: line, 
-                wrapper: wrapper,
-                x: 0, 
-                y: 0 
-            });
+            wrap.appendChild(prism);
+            grid.appendChild(wrap);
+            prisms.push({ el: prism, wrap: wrap, x: 0, y: 0 });
         }
 
-        // Cache positions once to avoid layout thrashing
-        function updateLayout() {
-            items.forEach(item => {
-                const rect = item.wrapper.getBoundingClientRect();
-                item.x = rect.left + rect.width / 2;
-                item.y = rect.top + rect.height / 2;
+        // Cache positions for smooth performance
+        function layout() {
+            prisms.forEach(p => {
+                const r = p.wrap.getBoundingClientRect();
+                p.x = r.left + r.width / 2;
+                p.y = r.top + r.height / 2;
             });
         }
-        window.addEventListener('resize', updateLayout);
-        updateLayout();
+        window.addEventListener('resize', layout);
+        layout();
 
-        function handleMove(e) {
-            const mouseX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-            const mouseY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+        // Mouse Logic
+        window.addEventListener('mousemove', e => {
+            glow.style.opacity = "1";
+            glow.style.left = `${e.clientX}px`;
+            glow.style.top = `${e.clientY}px`;
 
-            const radius = 80; // Radius of the Prisma effect
+            const radius = 100;
 
-            items.forEach(item => {
-                const dx = mouseX - item.x;
-                const dy = mouseY - item.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+            prisms.forEach(p => {
+                const dx = e.clientX - p.x;
+                const dy = e.clientY - p.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
 
-                if (distance < radius) {
-                    // Calculate angle so lines point toward cursor
+                if (dist < radius) {
+                    // Point toward cursor
                     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-                    
-                    item.element.style.transform = `rotate(${angle + 90}deg) scaleY(1.5)`;
-                    item.element.classList.add('active');
+                    p.el.style.setProperty('--rotation', `${angle + 90}deg`);
+                    p.el.classList.add('active');
 
-                    // Brief timeout to allow the class to be removed for the fade transition
                     setTimeout(() => {
-                        item.element.classList.remove('active');
-                        item.element.style.transform = `rotate(${angle + 90}deg) scaleY(1)`;
+                        p.el.classList.remove('active');
                     }, 50);
                 }
             });
-        }
+        });
 
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            handleMove(e);
-        }, { passive: false });
+        function switchTab(name) {
+            console.log("Switching to: " + name);
+            // In a real site, this would swap the grid for Glow Cards or Ripples
+        }
     </script>
 </body>
 </html>

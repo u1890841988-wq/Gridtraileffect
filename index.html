@@ -1,242 +1,914 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Component Ideas</title>
-    <style>
-        :root {
-            --bg-color: rgb(14, 13, 10);
-            --gold: rgb(252, 213, 91);
-            --gold-dark: rgb(209, 184, 122);
-            --glow: rgba(252, 213, 91, 0.3);
-            --nav-bg: rgba(26, 24, 18, 0.8);
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Website Ideen Kit</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* ── VARS ────────────────────────────────────────────── */
+:root {
+  --bg:      rgb(14, 13, 10);
+  --accent:  rgb(252, 213, 91);
+  --dim:     rgb(209, 184, 122);
+  --card:    rgb(20, 19, 15);
+  --border:  rgba(252, 213, 91, 0.11);
+  --text:    rgb(228, 222, 206);
+  --muted:   rgb(128, 118, 92);
+  --nav-h:   60px;
+}
 
-        body {
-            background-color: var(--bg-color);
-            color: rgb(255, 255, 255);
-            font-family: sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
+/* ── RESET ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  cursor: default;
+  user-select: none;
+}
 
-        /* Cinematic Noise Texture */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.04;
-            z-index: 999;
-            pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
+/* ── GRAIN ───────────────────────────────────────────── */
+#grain {
+  position: fixed; inset: 0; z-index: 900; pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.4s steps(2) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-2%,-3%); }
+  50%  { transform: translate(1%,2%); }
+  75%  { transform: translate(-1%,1%); }
+  100% { transform: translate(2%,-1%); }
+}
 
-        /* NAVIGATION BAR */
-        .nav-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--nav-bg);
-            backdrop-filter: blur(15px);
-            padding: 12px 24px;
-            border-radius: 40px;
-            border: 1px solid rgba(252, 213, 91, 0.2);
-            display: flex;
-            gap: 20px;
-            z-index: 1000;
-        }
+/* ── SPOTLIGHT ───────────────────────────────────────── */
+#spotlight {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(500px circle at var(--mx,50%) var(--my,50%),
+    rgba(252,213,91,0.055) 0%, transparent 70%);
+}
 
-        .nav-link {
-            position: relative;
-            color: var(--gold-dark);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            padding: 5px 10px;
-            transition: color 0.3s ease;
-        }
+/* ── NAV ─────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 36px;
+  background: rgba(14,13,10,0.8);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border-bottom: 1px solid rgba(252,213,91,0.07);
+}
 
-        .nav-link:hover, .nav-link.active-tab {
-            color: var(--gold);
-        }
+.logo {
+  font-weight: 800; font-size: 0.8rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); white-space: nowrap; flex-shrink: 0;
+}
 
-        .svg-underline {
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            pointer-events: none;
-        }
+.nav-list {
+  display: flex; gap: 2px; list-style: none;
+  flex-wrap: wrap; justify-content: center;
+}
 
-        .svg-underline path {
-            stroke: var(--gold);
-            stroke-width: 4;
-            fill: none;
-            stroke-dasharray: 100;
-            stroke-dashoffset: 100;
-            transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+.nav-list button {
+  background: none; border: none; font-family: 'Syne', sans-serif;
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  padding: 8px 14px; border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.nav-list button:hover { color: var(--text); background: rgba(252,213,91,0.05); }
+.nav-list button.active { color: var(--accent); }
 
-        .nav-link:hover .svg-underline path, 
-        .nav-link.active-tab .svg-underline path {
-            stroke-dashoffset: 0;
-        }
+/* animated SVG underline – draws from centre outward */
+.nav-list button svg {
+  position: absolute; bottom: 3px; left: 14px;
+  width: calc(100% - 28px); height: 3px;
+  overflow: visible; pointer-events: none;
+}
+.nav-list button svg path {
+  stroke: var(--accent); stroke-width: 1.6; fill: none;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px rgba(252,213,91,0.75));
+}
 
-        /* Component display area */
-        .viewport {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+/* ── PAGES ───────────────────────────────────────────── */
+.page {
+  position: fixed; inset: 0; top: var(--nav-h);
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 64px 32px 80px;
+  opacity: 0; pointer-events: none;
+  transform: translateY(16px);
+  transition: opacity 0.38s cubic-bezier(.22,1,.36,1),
+              transform 0.38s cubic-bezier(.22,1,.36,1);
+  z-index: 10;
+}
+.page.active { opacity: 1; pointer-events: all; transform: translateY(0); }
 
-        /* Section visibility */
-        .component-section {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-        }
+/* HOME PAGE */
+#page-home {
+  justify-content: center; text-align: center;
+}
+.home-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--accent);
+  opacity: 0.75; margin-bottom: 20px;
+}
+.home-title {
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 800; letter-spacing: -0.04em; line-height: 0.95;
+}
+.home-title em { font-style: normal; color: var(--accent); }
+.home-sub {
+  margin-top: 22px; font-size: 0.95rem;
+  color: var(--muted); max-width: 420px;
+  line-height: 1.7; margin-left: auto; margin-right: auto;
+}
+.home-grid {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-top: 48px; max-width: 700px;
+}
+.home-chip {
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 9px 18px; font-size: 0.76rem; font-weight: 600;
+  color: var(--dim); background: rgba(252,213,91,0.03);
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 7px;
+}
+.home-chip:hover {
+  border-color: rgba(252,213,91,0.4); color: var(--accent);
+  background: rgba(252,213,91,0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(252,213,91,0.08);
+}
 
-        .active-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* SECTION HEADERS (shared) */
+.sec-head { text-align: center; max-width: 580px; margin-bottom: 52px; }
+.sec-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.24em;
+  text-transform: uppercase; color: var(--accent);
+  opacity: 0.7; margin-bottom: 12px;
+}
+.sec-title {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+}
+.sec-title em { font-style: normal; color: var(--accent); }
+.sec-desc {
+  margin-top: 14px; font-size: 0.88rem;
+  color: var(--muted); line-height: 1.72;
+}
 
-        /* Global Cursor Spotlight */
-        .cursor-light {
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
+/* ═══════════════════════════════════════════
+   1  PRISMA GRID
+═══════════════════════════════════════════ */
+#page-prisma { gap: 0; }
+#prisma-wrap {
+  width: min(100%, 940px); border-radius: 14px;
+  border: 1px solid var(--border); overflow: hidden;
+  background: rgb(9,9,7);
+}
+#prisma-canvas { display: block; width: 100%; height: 440px; }
 
-        /* Updated Prisma Styling */
-        .prisma-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-            width: 100%;
-            height: 100%;
-        }
+/* ═══════════════════════════════════════════
+   2  GLOW CARDS
+═══════════════════════════════════════════ */
+#page-glow { gap: 0; }
+.glow-row {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  justify-content: center; width: min(100%, 960px);
+}
+.glow-card {
+  position: relative; width: 270px; min-height: 340px;
+  border-radius: 16px; border: 1px solid var(--border);
+  background: var(--card); overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s cubic-bezier(.22,1,.36,1);
+}
+.glow-card:hover { border-color: rgba(252,213,91,0.25); transform: translateY(-5px); }
+.glow-beam {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: 0; transition: opacity 0.3s; border-radius: 16px;
+}
+.glow-card:hover .glow-beam { opacity: 1; }
+.glow-inner {
+  position: relative; z-index: 2;
+  padding: 32px 26px; height: 100%;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.ci { font-size: 1.5rem; width: 46px; height: 46px; border-radius: 10px;
+  background: rgba(252,213,91,0.07); border: 1px solid rgba(252,213,91,0.15);
+  display: flex; align-items: center; justify-content: center; }
+.ct { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.18em;
+  text-transform:uppercase; color:var(--accent); opacity:0.7; }
+.cn { font-size:1rem; font-weight:700; line-height:1.3; }
+.cb { font-size:0.81rem; color:var(--muted); line-height:1.65; }
+.cf { margin-top:auto; font-size:0.74rem; color:var(--dim); font-weight:600;
+  display:flex; align-items:center; gap:8px; }
+.cf::before { content:''; flex:1; height:1px; background:var(--border); }
 
-        .p-item {
-            width: 2px;
-            height: 18px;
-            background-color: var(--gold);
-            opacity: 0;
-            transition: opacity 2s ease, transform 2s ease;
-        }
+/* ═══════════════════════════════════════════
+   3  RIPPLE GRID
+═══════════════════════════════════════════ */
+#page-ripple { gap: 0; }
+#ripple-wrap {
+  padding: 28px; border-radius: 14px;
+  border: 1px solid var(--border); background: rgb(9,9,7);
+  width: min(100%, 960px);
+}
+#ripple-grid {
+  display: grid; gap: 5px;
+  grid-template-columns: repeat(26, 1fr);
+}
+.r-cell {
+  aspect-ratio: 1; border-radius: 5px;
+  background: rgb(26,25,20);
+  border: 1px solid rgba(252,213,91,0.05);
+  transition: transform 0.18s cubic-bezier(.34,1.56,.64,1),
+              background 0.28s, border-color 0.28s;
+  will-change: transform;
+}
 
-        .p-item.active {
-            opacity: 1;
-            box-shadow: 0 0 10px var(--gold);
-            transition: none;
-        }
-    </style>
+/* ═══════════════════════════════════════════
+   4  MAGNETIC BUTTONS
+═══════════════════════════════════════════ */
+#page-mag { gap: 0; }
+.mag-stage {
+  width: min(100%, 860px); min-height: 320px;
+  border-radius: 14px; border: 1px solid var(--border);
+  background: rgb(9,9,7);
+  display: flex; flex-wrap: wrap;
+  align-items: center; justify-content: center; gap: 28px;
+  padding: 56px 40px;
+}
+.mag-btn {
+  position: relative; border: 1.5px solid var(--border);
+  border-radius: 999px; background: var(--card);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--dim);
+  padding: 16px 36px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+.mag-btn span { position: relative; z-index: 1; pointer-events: none; display: block; }
+.mag-btn .btn-bg {
+  position: absolute; inset: -2px; border-radius: 999px;
+  background: var(--accent);
+  transform: scale(0); transform-origin: center;
+  transition: transform 0.38s cubic-bezier(.22,1,.36,1);
+  z-index: 0;
+}
+.mag-btn.active-fill .btn-bg { transform: scale(1); }
+.mag-btn.active-fill { color: var(--bg); border-color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   5  TEXT SCRAMBLE
+═══════════════════════════════════════════ */
+#page-scramble { gap: 0; }
+.scramble-stage {
+  width: min(100%, 860px); border-radius: 14px;
+  border: 1px solid var(--border); background: rgb(9,9,7);
+  padding: 56px 48px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.scramble-line {
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-weight: 800; letter-spacing: -0.02em;
+  color: var(--text); cursor: default; line-height: 1.1;
+  transition: color 0.2s;
+}
+.scramble-line:hover { color: var(--accent); }
+.scramble-line .char { display: inline-block; }
+
+/* ═══════════════════════════════════════════
+   6  INFINITE TICKER
+═══════════════════════════════════════════ */
+#page-ticker { gap: 0; }
+.ticker-outer {
+  width: 100%; max-width: 960px; border-radius: 14px;
+  border: 1px solid var(--border); background: rgb(9,9,7);
+  overflow: hidden; padding: 40px 0;
+  display: flex; flex-direction: column; gap: 28px;
+}
+.ticker-row { display: flex; width: max-content; }
+.ticker-track {
+  display: flex; gap: 0; white-space: nowrap;
+  animation: ticker-l 18s linear infinite;
+}
+.ticker-track.rev { animation: ticker-r 22s linear infinite; }
+@keyframes ticker-l { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes ticker-r { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 0 28px; font-weight: 700;
+  font-size: 0.85rem; letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ticker-item.gold { color: var(--accent); }
+.ticker-item.dim  { color: var(--muted); }
+.ticker-sep { color: var(--accent); opacity: 0.4; font-size: 0.5rem; }
+.ticker-outer:hover .ticker-track { animation-play-state: paused; }
+
+/* ═══════════════════════════════════════════
+   7  3D TILT CARDS
+═══════════════════════════════════════════ */
+#page-tilt { gap: 0; }
+.tilt-row {
+  display: flex; gap: 22px; flex-wrap: wrap;
+  justify-content: center; width: min(100%, 960px);
+}
+.tilt-card {
+  width: 260px; height: 320px;
+  border-radius: 18px; border: 1px solid var(--border);
+  background: var(--card); overflow: hidden;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: box-shadow 0.3s;
+  cursor: default;
+}
+.tilt-card:hover {
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(252,213,91,0.08);
+}
+.tilt-shine {
+  position: absolute; inset: 0; border-radius: 18px;
+  background: radial-gradient(
+    circle at var(--sx,50%) var(--sy,50%),
+    rgba(255,255,255,0.06) 0%, transparent 55%
+  );
+  pointer-events: none; z-index: 3;
+}
+.tilt-content {
+  position: relative; z-index: 2;
+  padding: 28px 24px; height: 100%;
+  display: flex; flex-direction: column; gap: 12px;
+  transform: translateZ(18px);
+}
+.tilt-icon { font-size: 2rem; }
+.tilt-num {
+  font-family: 'DM Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent); opacity: 0.65;
+}
+.tilt-name { font-size: 1.1rem; font-weight: 700; line-height: 1.25; }
+.tilt-body { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+.tilt-bar {
+  margin-top: auto; height: 2px; border-radius: 2px;
+  background: rgba(252,213,91,0.12); overflow: hidden;
+}
+.tilt-bar-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent));
+  width: var(--pct, 60%);
+}
+.tilt-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg,
+    rgba(252,213,91,0.04) 0%, transparent 55%);
+  border-radius: 18px; z-index: 1;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+.page::-webkit-scrollbar { width: 4px; }
+.page::-webkit-scrollbar-track { background: transparent; }
+.page::-webkit-scrollbar-thumb { background: rgba(252,213,91,0.2); border-radius: 4px; }
+</style>
 </head>
 <body>
 
-    <nav class="nav-container">
-        <a class="nav-link active-tab" data-target="s-prisma">Prisma
-            <svg class="svg-underline" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 L 100 5"></path></svg>
-        </a>
-        <a class="nav-link" data-target="s-cards">Glow Cards
-            <svg class="svg-underline" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 L 100 5"></path></svg>
-        </a>
-        <a class="nav-link" data-target="s-ripple">Ripple
-            <svg class="svg-underline" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 L 100 5"></path></svg>
-        </a>
-        <a class="nav-link" data-target="s-more">Upcoming
-            <svg class="svg-underline" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 L 100 5"></path></svg>
-        </a>
-    </nav>
+<div id="grain"></div>
+<div id="spotlight"></div>
 
-    <div class="cursor-light" id="light"></div>
+<!-- ── NAV ──────────────────────────────────────────────── -->
+<nav>
+  <span class="logo">Ideen Kit</span>
+  <ul class="nav-list" id="nav-list">
+    <li><button data-page="home" class="active">Home<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="prisma">Prisma Grid<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="glow">Glow Cards<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="ripple">Ripple Grid<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="mag">Magnetic Btns<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="scramble">Text Scramble<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="ticker">Ticker<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+    <li><button data-page="tilt">3D Tilt<svg><path d="M0.5,2.5 H0.5"/></svg></button></li>
+  </ul>
+</nav>
 
-    <div class="viewport">
-        <section class="component-section active-section s-prisma">
-            <div class="prisma-grid" id="p-grid"></div>
-        </section>
+<!-- ════════════════ PAGES ════════════════ -->
 
-        <section class="component-section s-cards">
-            <!-- Glow card logic remains same as previous version -->
-        </section>
-    </div>
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <p class="home-badge">✦ Website Ideen Kit</p>
+  <h1 class="home-title">Modern<br/><em>UI</em><br/>Components</h1>
+  <p class="home-sub">Klick auf einen Begriff oben und entdecke die jeweilige Komponente als eigene Seite. Alles gebaut mit Vanilla JS.</p>
+  <div class="home-grid">
+    <div class="home-chip" data-goto="prisma">⬡ Prisma Grid</div>
+    <div class="home-chip" data-goto="glow">◈ Glow Cards</div>
+    <div class="home-chip" data-goto="ripple">◇ Ripple Grid</div>
+    <div class="home-chip" data-goto="mag">⊕ Magnetic Buttons</div>
+    <div class="home-chip" data-goto="scramble">Aa Text Scramble</div>
+    <div class="home-chip" data-goto="ticker">▶ Infinite Ticker</div>
+    <div class="home-chip" data-goto="tilt">⬚ 3D Tilt Cards</div>
+  </div>
+</div>
 
-    <script>
-        const light = document.getElementById('light');
-        window.addEventListener('mousemove', e => {
-            light.style.opacity = 1;
-            light.style.left = e.clientX + 'px';
-            light.style.top = e.clientY + 'px';
-        });
+<!-- PRISMA GRID -->
+<div class="page" id="page-prisma">
+  <div class="sec-head">
+    <p class="sec-tag">01 — Prisma Grid</p>
+    <h2 class="sec-title">Squares that<br/><em>track your cursor</em></h2>
+    <p class="sec-desc">Dense field of small squares rotating exactly toward the mouse using Math.atan2 — gold glow on approach, 2-second fade out on leave.</p>
+  </div>
+  <div id="prisma-wrap"><canvas id="prisma-canvas"></canvas></div>
+</div>
 
-        // Tab Switching
-        const links = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('.component-section');
-        links.forEach(link => {
-            link.onclick = () => {
-                links.forEach(l => l.classList.remove('active-tab'));
-                sections.forEach(s => s.classList.remove('active-section'));
-                link.classList.add('active-tab');
-                document.querySelector('.' + link.dataset.target).classList.add('active-section');
-            };
-        });
+<!-- GLOW CARDS -->
+<div class="page" id="page-glow">
+  <div class="sec-head">
+    <p class="sec-tag">02 — Glow Cards</p>
+    <h2 class="sec-title">Light that follows<br/><em>your hand</em></h2>
+    <p class="sec-desc">Each card paints a radial beam precisely where you hover — illuminating from within, clipped to its own boundary.</p>
+  </div>
+  <div class="glow-row" id="glow-row"></div>
+</div>
 
-        // Grid Generation
-        const grid = document.getElementById('p-grid');
-        const items = [];
-        for(let i=0; i<600; i++) {
-            const div = document.createElement('div');
-            div.style.display = 'flex';
-            div.style.alignItems = 'center';
-            div.style.justifyContent = 'center';
-            const line = document.createElement('div');
-            line.className = 'p-item';
-            div.appendChild(line);
-            grid.appendChild(div);
-            items.push({line, div});
+<!-- RIPPLE GRID -->
+<div class="page" id="page-ripple">
+  <div class="sec-head">
+    <p class="sec-tag">03 — Ripple Grid</p>
+    <h2 class="sec-title">Touch that<br/><em>spreads outward</em></h2>
+    <p class="sec-desc">Every cell triggers a euclidean ripple wave — scale and color cascade to neighbouring cells in a timed sequence.</p>
+  </div>
+  <div id="ripple-wrap"><div id="ripple-grid"></div></div>
+</div>
+
+<!-- MAGNETIC BUTTONS -->
+<div class="page" id="page-mag">
+  <div class="sec-head">
+    <p class="sec-tag">04 — Magnetic Buttons</p>
+    <h2 class="sec-title">Buttons that<br/><em>pull toward you</em></h2>
+    <p class="sec-desc">Cursor proximity warps each button's position — with a full fill animation that triggers on close approach.</p>
+  </div>
+  <div class="mag-stage" id="mag-stage"></div>
+</div>
+
+<!-- TEXT SCRAMBLE -->
+<div class="page" id="page-scramble">
+  <div class="sec-head">
+    <p class="sec-tag">05 — Text Scramble</p>
+    <h2 class="sec-title">Characters that<br/><em>reveal themselves</em></h2>
+    <p class="sec-desc">Hover any line to trigger a random character scramble that resolves back to the original text — chaotic then precise.</p>
+  </div>
+  <div class="scramble-stage" id="scramble-stage"></div>
+</div>
+
+<!-- TICKER -->
+<div class="page" id="page-ticker">
+  <div class="sec-head">
+    <p class="sec-tag">06 — Infinite Ticker</p>
+    <h2 class="sec-title">Endless motion<br/><em>in both directions</em></h2>
+    <p class="sec-desc">Dual-direction infinite marquee — pauses on hover. Seamless looping without JavaScript, pure CSS animation.</p>
+  </div>
+  <div class="ticker-outer" id="ticker-outer"></div>
+</div>
+
+<!-- 3D TILT CARDS -->
+<div class="page" id="page-tilt">
+  <div class="sec-head">
+    <p class="sec-tag">07 — 3D Tilt Cards</p>
+    <h2 class="sec-title">Depth through<br/><em>perspective</em></h2>
+    <p class="sec-desc">CSS perspective transforms driven by mouse position — a specular highlight layer adds the illusion of physical surface.</p>
+  </div>
+  <div class="tilt-row" id="tilt-row"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   SPOTLIGHT
+══════════════════════════════════════════════════════ */
+const spot = document.getElementById('spotlight');
+document.addEventListener('mousemove', e => {
+  spot.style.setProperty('--mx', e.clientX + 'px');
+  spot.style.setProperty('--my', e.clientY + 'px');
+});
+
+/* ══════════════════════════════════════════════════════
+   NAV – SPA PAGE SWITCHER + SVG UNDERLINE
+══════════════════════════════════════════════════════ */
+const pages   = document.querySelectorAll('.page');
+const navBtns = document.querySelectorAll('#nav-list button');
+
+function showPage(id) {
+  pages.forEach(p => p.classList.remove('active'));
+  navBtns.forEach(b => b.classList.remove('active'));
+  const target = document.getElementById('page-' + id);
+  if (target) target.classList.add('active');
+  navBtns.forEach(b => { if (b.dataset.page === id) b.classList.add('active'); });
+}
+
+/* animated underline – draws from centre outward */
+function animateUnderline(btn, dir) {
+  const path = btn.querySelector('svg path');
+  if (!path) return;
+  const from = dir === 'in' ? 0 : 1;
+  const to   = dir === 'in' ? 1 : 0;
+  const dur  = dir === 'in' ? 340 : 220;
+  const t0   = performance.now();
+  function ease(t) { return t < 0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  (function step(now) {
+    const t = Math.min((now - t0) / dur, 1);
+    const p = from + (to - from) * ease(t);
+    const h = p * 0.5;
+    path.setAttribute('d', `M ${0.5-h} 2.5 L ${0.5+h} 2.5`);
+    if (t < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => showPage(btn.dataset.page));
+  btn.addEventListener('mouseenter', () => animateUnderline(btn, 'in'));
+  btn.addEventListener('mouseleave', () => {
+    if (!btn.classList.contains('active')) animateUnderline(btn, 'out');
+  });
+});
+
+/* home chips */
+document.querySelectorAll('.home-chip[data-goto]').forEach(chip => {
+  chip.addEventListener('click', () => showPage(chip.dataset.goto));
+});
+
+/* draw active underlines on load */
+navBtns.forEach(btn => {
+  if (btn.classList.contains('active')) animateUnderline(btn, 'in');
+});
+
+/* ══════════════════════════════════════════════════════
+   1 · PRISMA GRID – small squares pointing at cursor
+══════════════════════════════════════════════════════ */
+(function() {
+  const wrap   = document.getElementById('prisma-wrap');
+  const canvas = document.getElementById('prisma-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  const GAP      = 28;
+  const SQ       = 5;      /* half-size of each square */
+  const NEAR     = 140;
+  const FADE_MS  = 2000;
+
+  let W, H, grid = [], mouse = { x:-9999, y:-9999 }, inside = false;
+
+  function resize() {
+    const r = wrap.getBoundingClientRect();
+    W = r.width; H = canvas.offsetHeight;
+    const dpr = devicePixelRatio;
+    canvas.width  = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.scale(dpr, dpr);
+    build();
+  }
+
+  function build() {
+    grid = [];
+    const cols = Math.floor(W / GAP);
+    const rows = Math.floor(H / GAP);
+    const ox = (W - (cols-1)*GAP) / 2;
+    const oy = (H - (rows-1)*GAP) / 2;
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        grid.push({ x: ox+c*GAP, y: oy+r*GAP, angle: 0, op: 0, sc: 1, hit: -Infinity });
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+    inside = true;
+  });
+  canvas.addEventListener('mouseleave', () => { inside = false; });
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0, n = grid.length; i < n; i++) {
+      const g  = grid[i];
+      const dx = mouse.x - g.x, dy = mouse.y - g.y;
+      const d  = Math.sqrt(dx*dx + dy*dy);
+
+      if (inside && d < NEAR) {
+        const prox = 1 - d / NEAR;
+        g.angle = Math.atan2(dy, dx);
+        g.op    = 0.25 + prox * 0.75;
+        g.sc    = 1 + prox * 1.4;
+        g.hit   = ts;
+      } else {
+        const el = ts - g.hit;
+        g.op = el < FADE_MS ? Math.max(0, 1 - el/FADE_MS) : 0;
+        g.sc = 1 + (g.op * 1.4);
+      }
+
+      if (g.op < 0.01) continue;
+
+      const s = SQ * g.sc;
+      ctx.save();
+      ctx.globalAlpha  = g.op;
+      ctx.translate(g.x, g.y);
+      ctx.rotate(g.angle);
+      ctx.shadowColor  = 'rgba(252,213,91,0.95)';
+      ctx.shadowBlur   = 7 * g.op;
+      ctx.fillStyle    = `rgba(252,213,91,${g.op})`;
+      ctx.fillRect(-s, -s, s*2, s*2);
+      ctx.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* ══════════════════════════════════════════════════════
+   2 · GLOW CARDS
+══════════════════════════════════════════════════════ */
+(function() {
+  const data = [
+    { icon:'⬡', tag:'Layout',  name:'Adaptive Grid System',   body:'A constraint-based layout engine that reflows components based on viewport and content priority rules.',    foot:'Explore →' },
+    { icon:'◈', tag:'Motion',  name:'Spring Physics Layer',   body:'Velocity-aware animations driven by configurable spring constants — zero-duration when reduced-motion is on.', foot:'Explore →' },
+    { icon:'◇', tag:'Input',   name:'Gesture Surface API',    body:'Unified pointer, touch and stylus handler with pressure sensitivity and multi-finger chord detection.',       foot:'Explore →' },
+    { icon:'⊕', tag:'Effects', name:'Blur Reveal Transition', body:'Content masked behind a gaussian blur that dissolves away as elements enter the viewport on scroll.',         foot:'Explore →' },
+  ];
+
+  const row = document.getElementById('glow-row');
+  data.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'glow-card';
+
+    const beam = document.createElement('div');
+    beam.className = 'glow-beam';
+    card.appendChild(beam);
+
+    const inner = document.createElement('div');
+    inner.className = 'glow-inner';
+    inner.innerHTML = `
+      <div class="ci">${d.icon}</div>
+      <span class="ct">${d.tag}</span>
+      <h3 class="cn">${d.name}</h3>
+      <p class="cb">${d.body}</p>
+      <div class="cf">${d.foot}</div>`;
+    card.appendChild(inner);
+    row.appendChild(card);
+
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width  * 100).toFixed(1);
+      const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+      beam.style.background = `radial-gradient(circle at ${x}% ${y}%,
+        rgba(252,213,91,0.14) 0%, rgba(252,213,91,0.05) 35%, transparent 62%)`;
+    });
+    card.addEventListener('mouseleave', () => { beam.style.background = ''; });
+  });
+})();
+
+/* ══════════════════════════════════════════════════════
+   3 · RIPPLE GRID
+══════════════════════════════════════════════════════ */
+(function() {
+  const container = document.getElementById('ripple-grid');
+  const COLS = 26, ROWS = 12, MAX_D = 7;
+  const cells = [];
+  const waves = new Map();
+
+  for (let r = 0; r < ROWS; r++) {
+    cells[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      const el = document.createElement('div');
+      el.className = 'r-cell';
+      container.appendChild(el);
+      cells[r][c] = el;
+    }
+  }
+
+  function ripple(or, oc) {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const d = Math.sqrt((r-or)**2 + (c-oc)**2);
+        if (d > MAX_D) continue;
+        const key   = r*100+c;
+        const delay = d * 75;
+        const prox  = 1 - d/MAX_D;
+        const scale = 1 + prox * 0.5;
+        const alpha = 0.08 + prox * 0.6;
+
+        if (waves.has(key)) clearTimeout(waves.get(key));
+
+        setTimeout(() => {
+          const el = cells[r][c];
+          el.style.transform   = `scale(${scale})`;
+          el.style.background  = `rgba(252,213,91,${alpha})`;
+          el.style.borderColor = `rgba(252,213,91,${0.15 + prox*0.5})`;
+          const t = setTimeout(() => {
+            el.style.transform   = 'scale(1)';
+            el.style.background  = 'rgb(26,25,20)';
+            el.style.borderColor = 'rgba(252,213,91,0.05)';
+            waves.delete(key);
+          }, 420 + d * 55);
+          waves.set(key, t);
+        }, delay);
+      }
+    }
+  }
+
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      const el = cells[r][c];
+      el.addEventListener('mouseenter', () => ripple(r, c));
+    }
+})();
+
+/* ══════════════════════════════════════════════════════
+   4 · MAGNETIC BUTTONS
+══════════════════════════════════════════════════════ */
+(function() {
+  const labels = ['Design System','Components','Motion','Typography','Grid','Tokens','Icons','Theming'];
+  const stage  = document.getElementById('mag-stage');
+
+  labels.forEach(lbl => {
+    const btn = document.createElement('button');
+    btn.className = 'mag-btn';
+    btn.innerHTML = `<div class="btn-bg"></div><span>${lbl}</span>`;
+    stage.appendChild(btn);
+
+    const STRENGTH = 0.38, FILL_DIST = 90;
+    let ox = 0, oy = 0, raf;
+
+    btn.addEventListener('mousemove', e => {
+      const r  = btn.getBoundingClientRect();
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      const dx = e.clientX - cx, dy = e.clientY - cy;
+      const d  = Math.sqrt(dx*dx + dy*dy);
+
+      ox = dx * STRENGTH;
+      oy = dy * STRENGTH;
+      btn.style.transform = `translate(${ox}px,${oy}px)`;
+
+      if (d < FILL_DIST) {
+        btn.classList.add('active-fill');
+      } else {
+        btn.classList.remove('active-fill');
+      }
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = 'translate(0px,0px)';
+      btn.classList.remove('active-fill');
+    });
+  });
+})();
+
+/* ══════════════════════════════════════════════════════
+   5 · TEXT SCRAMBLE
+══════════════════════════════════════════════════════ */
+(function() {
+  const lines = [
+    'Interface Design',
+    'Motion Systems',
+    'Component Library',
+    'Visual Identity',
+    'Interaction Patterns',
+  ];
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@$%&';
+  const stage = document.getElementById('scramble-stage');
+
+  lines.forEach(text => {
+    const div = document.createElement('div');
+    div.className = 'scramble-line';
+    div.textContent = text;
+    stage.appendChild(div);
+
+    let animId, running = false;
+
+    div.addEventListener('mouseenter', () => {
+      if (running) return;
+      running = true;
+      const chars = text.split('');
+      const total = chars.length;
+      let frame = 0;
+      const maxFrames = total * 3;
+
+      cancelAnimationFrame(animId);
+      (function loop() {
+        let out = '';
+        for (let i = 0; i < total; i++) {
+          if (chars[i] === ' ') { out += ' '; continue; }
+          if (frame > i * 3) {
+            out += chars[i];
+          } else {
+            out += CHARS[Math.floor(Math.random() * CHARS.length)];
+          }
         }
+        div.textContent = out;
+        frame++;
+        if (frame <= maxFrames) {
+          animId = requestAnimationFrame(loop);
+        } else {
+          div.textContent = text;
+          running = false;
+        }
+      })();
+    });
+  });
+})();
 
-        window.onmousemove = e => {
-            items.forEach(item => {
-                const r = item.div.getBoundingClientRect();
-                const dx = e.clientX - (r.left + r.width/2);
-                const dy = e.clientY - (r.top + r.height/2);
-                const d = Math.sqrt(dx*dx + dy*dy);
-                if(d < 100) {
-                    const ang = Math.atan2(dy, dx) * (180/Math.PI);
-                    item.line.style.transform = `rotate(${ang+90}deg) scaleY(${1 + (100-d)/50})`;
-                    item.line.classList.add('active');
-                    setTimeout(() => {
-                        item.line.classList.remove('active');
-                        item.line.style.transform = `rotate(${ang+90}deg) scaleY(1)`;
-                    }, 100);
-                }
-            });
-        };
-    </script>
+/* ══════════════════════════════════════════════════════
+   6 · INFINITE TICKER
+══════════════════════════════════════════════════════ */
+(function() {
+  const outer = document.getElementById('ticker-outer');
+
+  const rows = [
+    { items: ['Design Systems','Motion Design','Typography','Component Libraries','Grid Systems','Color Theory','Spacing Tokens','Iconography'], cls:'gold' },
+    { items: ['React','Vue','Svelte','Vanilla JS','Web Components','CSS Houdini','View Transitions','Container Queries'], cls:'dim'  },
+  ];
+
+  rows.forEach((row, i) => {
+    const rowDiv   = document.createElement('div');
+    rowDiv.className = 'ticker-row';
+    const track = document.createElement('div');
+    track.className = 'ticker-track' + (i===1 ? ' rev' : '');
+
+    /* duplicate for seamless loop */
+    const all = [...row.items, ...row.items];
+    all.forEach(item => {
+      const span = document.createElement('span');
+      span.className = `ticker-item ${row.cls}`;
+      span.innerHTML = `${item}<span class="ticker-sep">✦</span>`;
+      track.appendChild(span);
+    });
+    rowDiv.appendChild(track);
+    outer.appendChild(rowDiv);
+  });
+})();
+
+/* ══════════════════════════════════════════════════════
+   7 · 3D TILT CARDS
+══════════════════════════════════════════════════════ */
+(function() {
+  const data = [
+    { icon:'🔲', num:'01', name:'Layout Engine', body:'Smart reflow & constraint-based grid positioning across breakpoints.', pct:'85%' },
+    { icon:'🎨', num:'02', name:'Token System',  body:'Design token pipeline: Figma → JSON → CSS variables → components.',  pct:'72%' },
+    { icon:'⚡', num:'03', name:'Motion Layer',  body:'Spring physics and easing curves for every interactive state.',       pct:'90%' },
+    { icon:'🔍', num:'04', name:'A11y Suite',    body:'Automated accessibility audit baked into the component lifecycle.',   pct:'68%' },
+  ];
+
+  const row = document.getElementById('tilt-row');
+  data.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'tilt-card';
+    card.style.setProperty('--pct', d.pct);
+    card.innerHTML = `
+      <div class="tilt-shine"></div>
+      <div class="tilt-content">
+        <span class="tilt-icon">${d.icon}</span>
+        <span class="tilt-num">${d.num}</span>
+        <h3 class="tilt-name">${d.name}</h3>
+        <p class="tilt-body">${d.body}</p>
+        <div class="tilt-bar"><div class="tilt-bar-fill"></div></div>
+      </div>`;
+    row.appendChild(card);
+
+    const shine = card.querySelector('.tilt-shine');
+    const MAX = 18;
+
+    card.addEventListener('mousemove', e => {
+      const r  = card.getBoundingClientRect();
+      const x  = (e.clientX - r.left) / r.width;
+      const y  = (e.clientY - r.top)  / r.height;
+      const rx = (y - 0.5) * -MAX * 2;
+      const ry = (x - 0.5) *  MAX * 2;
+      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.04)`;
+      shine.style.setProperty('--sx', (x*100).toFixed(1)+'%');
+      shine.style.setProperty('--sy', (y*100).toFixed(1)+'%');
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+  });
+})();
+</script>
 </body>
 </html>

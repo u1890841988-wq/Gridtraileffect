@@ -3,35 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Grid Trail</title>
+    <title>Interactive Glowing Grid</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #0a0a0a;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #050505;
             height: 100vh;
-            font-family: sans-serif;
+            width: 100vw;
+            overflow: hidden;
         }
 
         .grid-container {
             display: grid;
-            /* Adjust columns and rows based on screen size */
-            grid-template-columns: repeat(20, 1fr);
-            grid-template-rows: repeat(20, 1fr);
-            gap: 4px;
-            width: 90vw;
-            height: 90vh;
+            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+            grid-template-rows: repeat(auto-fill, minmax(35px, 1fr));
+            width: 100vw;
+            height: 100vh;
         }
 
         .grid-item {
-            background-color: #1a1a1a;
-            border-radius: 2px;
-            transition: transform 0.1s ease-out, background-color 0.4s ease;
-            will-change: transform;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            background-color: transparent;
+            /* Fade out duration set to 2 seconds */
+            transition: background-color 2s ease, box-shadow 2s ease;
+        }
+
+        /* Random Twinkle Animation */
+        @keyframes randomGlow {
+            0%, 100% { opacity: 0; }
+            50% { 
+                opacity: 0.3;
+                background-color: #9d50bb; 
+            }
+        }
+
+        .grid-item::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0;
+            animation: randomGlow 8s infinite;
+        }
+
+        /* Cursor Interaction State */
+        .grid-item.active {
+            background-color: #00d2ff;
+            background-image: linear-gradient(135deg, #00d2ff 0%, #9d50bb 100%);
+            box-shadow: 0 0 20px #00d2ff, 0 0 40px #9d50bb;
+            z-index: 2;
+            /* Instant glow on contact */
+            transition: 0s; 
+            opacity: 1 !important;
         }
     </style>
 </head>
@@ -40,53 +64,54 @@
     <div class="grid-container" id="grid"></div>
 
     <script>
-        const gridContainer = document.getElementById('grid');
-        const totalItems = 400; // 20x20 grid
+        const container = document.getElementById('grid');
+        
+        // Setup Grid
+        const squareSize = 35;
+        const columns = Math.ceil(window.innerWidth / squareSize);
+        const rows = Math.ceil(window.innerHeight / squareSize);
+        const totalSquares = columns * rows;
 
-        // Create grid elements
-        for (let i = 0; i < totalItems; i++) {
-            const item = document.createElement('div');
-            item.classList.add('grid-item');
-            gridContainer.appendChild(item);
+        for (let i = 0; i < totalSquares; i++) {
+            const square = document.createElement('div');
+            square.classList.add('grid-item');
+            
+            // Assign a random animation delay to each square for the background glow
+            const delay = Math.random() * 10;
+            const duration = 5 + Math.random() * 5;
+            square.style.setProperty('--delay', `${delay}s`);
+            
+            // Inject the animation via JS to keep the delay random per item
+            const glowLayer = square.querySelector('::before');
+            square.style.animationDelay = `${delay}s`;
+            square.style.animationDuration = `${duration}s`;
+
+            // Mouse Events
+            square.addEventListener('mouseenter', () => handleInteraction(square));
+            
+            container.appendChild(square);
         }
 
-        const items = document.querySelectorAll('.grid-item');
+        // Handle the "trail" logic
+        function handleInteraction(el) {
+            el.classList.add('active');
+            
+            // The class is removed quickly, but the CSS transition 
+            // keeps the color visible for 2 seconds.
+            setTimeout(() => {
+                el.classList.remove('active');
+            }, 150);
+        }
 
-        window.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            items.forEach((item) => {
-                const rect = item.getBoundingClientRect();
-                const itemX = rect.left + rect.width / 2;
-                const itemY = rect.top + rect.height / 2;
-
-                // Calculate distance between mouse and each item
-                const distanceX = mouseX - itemX;
-                const distanceY = mouseY - itemY;
-                const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
-
-                // Define the "influence" radius
-                const maxDistance = 150;
-                
-                if (distance < maxDistance) {
-                    // Normalize the force (0 to 1)
-                    const force = (maxDistance - distance) / maxDistance;
-                    
-                    // Apply transformations
-                    const scale = 1 + force * 0.8;
-                    const rotation = force * 45;
-                    
-                    item.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
-                    item.style.backgroundColor = `rgba(100, 200, 255, ${force})`;
-                    item.style.zIndex = "10";
-                } else {
-                    item.style.transform = 'scale(1) rotate(0deg)';
-                    item.style.backgroundColor = '#1a1a1a';
-                    item.style.zIndex = "1";
-                }
-            });
-        });
+        // Touch support for mobile dragging
+        container.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (target && target.classList.contains('grid-item')) {
+                handleInteraction(target);
+            }
+        }, { passive: false });
     </script>
 </body>
 </html>
